@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include "rapidxml/rapidxml.hpp"
+#include <functional>
 
 class SDL_Window;
 class SDL_Renderer;
@@ -164,15 +165,23 @@ protected:
 
 class Program {
 private:
-    Window* window = nullptr;
 
 public:
+    Window* window = nullptr;
     void loadUserInterfaceFromXML(char *xml);
     void run();
     ~Program();
+    void reloadWidgetsFromXML(const std::string &xml);
 
 private:
     std::shared_ptr<Widget> createWidgetFromNode(rapidxml::xml_node<char>* node);
+};
+
+class FileWatcher {
+public:
+
+    void addWatch(const std::string &path, std::function<void()> callback);
+
 };
 
 #endif

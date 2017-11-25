@@ -21,14 +21,15 @@ std::string slurp(const char *filename)
 
 int main (int argc, char **argv)
 {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0){
-		std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
-		return 1;
-  }
-
+  FileWatcher watcher;
   Program p {};
   auto xml = slurp("./pinta.xml");
   p.loadUserInterfaceFromXML(const_cast<char*>(xml.c_str()));
+
+  watcher.addWatch("./pinta.xml", [&](){
+    p.reloadWidgetsFromXML(slurp("./pinta.xml"));
+  });
+
   p.run();
 	return 0;
 

@@ -6,7 +6,7 @@ CXX = g++
 SDL_LIB = -L/usr/local/lib -lSDL2 -Wl,-rpath=/usr/local/lib
 SDL_INCLUDE = -I/usr/local/include
 CXXFLAGS = -Wall -c -std=c++11 $(SDL_INCLUDE) `pkg-config --cflags pango cairo pangocairo`
-LDFLAGS = $(SDL_LIB) `pkg-config --libs pango cairo pangocairo`
+LDFLAGS = $(SDL_LIB) `pkg-config --libs pango cairo pangocairo` -lpthread
 EXE = cairo-experiment
 
 all: $(EXE)

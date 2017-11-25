@@ -3,6 +3,7 @@
 #include <memory>
 #include <SDL2/SDL.h>
 #include "rapidxml/rapidxml.hpp"
+#include <thread>
 
 const Margin& Widget::margin(){
     return _margin;
@@ -324,8 +325,19 @@ void Program::loadUserInterfaceFromXML(char *xml) {
     }
 }
 
+void Program::reloadWidgetsFromXML(const std::string &xml) {
+
+}
+
 void Program::run(){
-    this->window->open();
+    std::thread t([&](){
+        if (SDL_Init(SDL_INIT_VIDEO) != 0){
+            std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
+            return 1;
+        }
+        this->window->open();
+    });
+    t.join();
 }
 
 Program::~Program(){
@@ -423,4 +435,8 @@ Menu::Menu(){
 
 void Menu::setTitle(const std::string &title){
     this->_title = title;
+}
+
+void FileWatcher::addWatch(const std::string &path, std::function<void()> callback){
+
 }
