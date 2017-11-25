@@ -25,6 +25,7 @@ public:
     virtual void fillRectangle(int x, int y, int width, int height) = 0;
     virtual void drawRectangle(int x, int y, int width, int height) = 0;
     virtual void setLineWidth(int width) = 0;
+    virtual void drawText(int x, int y, int width, int height, const std::string &text, PangoAlignment alignment) = 0;
 };
 
 class CairoGraphics : public Graphics {
@@ -37,6 +38,7 @@ public:
     void fillRectangle(int x, int y, int width, int height) override;
     void drawRectangle(int x, int y, int width, int height) override;
     void setLineWidth(int width) override;
+    void drawText(int x, int y, int width, int height, const std::string &text, PangoAlignment alignment) override;
 };
 
 class Widget {
