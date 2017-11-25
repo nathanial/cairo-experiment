@@ -45,6 +45,38 @@ CairoGraphics::CairoGraphics(cairo_t *cr) : _cr(cr) {
 
 }
 
+double CairoGraphics::getTextWidth(const std::string &text){
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+    auto font = "Sans 11";
+    auto cr = this->_cr;
+
+    cairo_save (cr);
+    auto pc_context = pango_cairo_create_context(cr);
+    layout = pango_layout_new (pc_context);
+    auto font_options = cairo_font_options_create();
+    cairo_font_options_set_hint_style(font_options, CAIRO_HINT_STYLE_FULL);
+    cairo_font_options_set_antialias(font_options, CAIRO_ANTIALIAS_SUBPIXEL);
+    pango_cairo_context_set_font_options(pc_context, font_options);
+
+    pango_layout_set_text (layout, text.c_str(), -1);
+    desc = pango_font_description_from_string (font);
+    pango_layout_set_font_description (layout, desc);
+    pango_font_description_free (desc);
+
+    pango_layout_set_wrap(layout, PANGO_WRAP_WORD);
+    int layoutWidth;
+    int layoutHeight;
+    pango_layout_get_pixel_size(layout, &layoutWidth, &layoutHeight);
+
+    cairo_restore (cr);
+
+    g_object_unref (layout);
+    g_object_unref(pc_context);
+
+    return layoutWidth;
+}
+
 void CairoGraphics::setColor(const Color &color)  {
     cairo_set_source_rgba(this->_cr, color.r, color.g, color.b, color.a);
 }
@@ -74,7 +106,7 @@ void CairoGraphics::setLineWidth(int width) {
 void CairoGraphics::drawText(int x, int y, int width, int height, const std::string &text, PangoAlignment alignment) {
     PangoLayout *layout;
     PangoFontDescription *desc;
-    auto font = "DejaVu Sans Mono 11";
+    auto font = "Sans 11";
     auto cr = this->_cr;
 
     cairo_save (cr);
@@ -312,7 +344,12 @@ std::shared_ptr<Widget> Program::createWidgetFromNode(rapidxml::xml_node<char>* 
     } else if(name == "MainMenu"){
         result = std::make_shared<MainMenu>();
     } else if(name == "Menu"){
-        result = std::make_shared<Menu>();
+        auto menu = std::make_shared<Menu>();
+        auto nameAttribute = node->first_attribute("name");
+        if(nameAttribute){
+            menu->setTitle(nameAttribute->value());
+        }
+        result = menu;
     } else {
         std::cerr << "Unknown Widget: " << name << std::endl;
         return nullptr;
@@ -339,18 +376,51 @@ double MainMenu::height(){
 }
 
 void MainMenu::paint(Graphics &graphics) {
-
+    auto cursorX = 0.0;
+    for(auto && child : this->children){
+        graphics.save();
+        graphics.translate(cursorX + child->margin().left, 0);
+        child->render(graphics);
+        graphics.restore();
+        cursorX += child->width() + child->margin().left + child->margin().right;
+    }
 }
 
 
 double Menu::width() {
-    return 0;
+    return _width;
 }
 
 double Menu::height(){
-    return 0;
+    return 20;
+}
+
+std::string Menu::title(){
+    return this->_title;
 }
 
 void Menu::paint(Graphics &graphics) {
+    this->_width = graphics.getTextWidth(this->title()) + this->padding().left + this->padding().right;
+    graphics.setAntialias(false);
+    graphics.setColor(Colors::Black);
+    graphics.setLineWidth(1);
+    graphics.drawRectangle(0,0,this->width(),this->height());
+    graphics.drawText(0,0,this->width(),this->height(), this->title(), PANGO_ALIGN_CENTER);
+}
 
+const Padding& Widget::padding() {
+    return this->_padding;
+}
+
+void Widget::setPadding(const Padding &padding){
+    this->_padding = padding;
+}
+
+
+Menu::Menu(){
+    this->setPadding(Padding(10,5,10,5));
+}
+
+void Menu::setTitle(const std::string &title){
+    this->_title = title;
 }

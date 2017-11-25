@@ -30,6 +30,8 @@ struct Margin {
     Margin(double left, double top, double right, double bottom): left(left), top(top), right(right), bottom(bottom) {}
 };
 
+typedef Margin Padding;
+
 namespace Colors {
     static const Color White = Color(1,1,1,1);
     static const Color Black = Color(0,0,0,1);
@@ -37,6 +39,7 @@ namespace Colors {
 
 class Graphics {
 public:
+    virtual double getTextWidth(const std::string &text) = 0;
     virtual void save() = 0;
     virtual void restore() = 0;
     virtual void translate(double x, double y) = 0;
@@ -53,6 +56,7 @@ private:
     cairo_t *_cr;
 public:
     CairoGraphics(cairo_t *cr);
+    double getTextWidth(const std::string &text) override;
     void save() override;
     void restore() override;
     void translate(double x, double y) override;
@@ -68,6 +72,7 @@ class Widget {
 protected:
     std::vector<std::shared_ptr<Widget>> children;
     Margin _margin { 0 };
+    Padding _padding { 0 };
 
 public:
     void addWidget(std::shared_ptr<Widget> child);
@@ -78,6 +83,9 @@ public:
 
     const Margin& margin();
     void setMargin(const Margin &margin);
+
+    const Padding& padding();
+    void setPadding(const Padding &padding);
 
 protected:
     virtual void paint(Graphics &graphics) = 0;
@@ -140,9 +148,15 @@ protected:
 };
 
 class Menu : public Widget {
+private:
+    double _width = 0;
+    std::string _title;
 public:
+    Menu();
     double width() override;
     double height() override;
+    std::string title();
+    void setTitle(const std::string &title);
 
 protected:
     void paint(Graphics &graphics) override;
