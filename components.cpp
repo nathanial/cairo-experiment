@@ -10,11 +10,15 @@ void Widget::setMargin(const Margin &margin){
     this->_margin = margin;
 }
 
+void Widget::render(Graphics &graphics) {
+    this->paint(graphics);
+}
+
 Button::Button(const std::string &text): _text(text) {
 
 }
 
-void Button::draw(Graphics &graphics) {
+void Button::paint(Graphics &graphics) {
     graphics.setAntialias(false);
     graphics.setLineWidth(1);
 
@@ -227,7 +231,7 @@ void Window::draw_to_sdl(SDL_Surface *sdlsurf){
     CairoGraphics g(cr);
 
     for(auto && widget: this->_widgets){
-        widget->draw(g);
+        widget->render(g);
     }
 
     cairo_destroy (cr);
@@ -240,12 +244,12 @@ void VerticalPanel::addWidget(std::shared_ptr<Widget> child){
     this->children.push_back(child);
 }
 
-void VerticalPanel::draw(Graphics &graphics) {
+void VerticalPanel::paint(Graphics &graphics) {
     int cursorY = 0;
     for(auto &&widget : this->children){
         graphics.save();
         graphics.translate(widget->margin().left, cursorY + widget->margin().top);
-        widget->draw(graphics);
+        widget->render(graphics);
         cursorY += widget->height() + widget->margin().bottom + widget->margin().top;
         graphics.restore();
     }

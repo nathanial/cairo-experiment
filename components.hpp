@@ -68,12 +68,16 @@ private:
     Margin _margin { 0 };
 
 public:
-    virtual void draw(Graphics &graphics) = 0;
+    void render(Graphics &graphics);
+
     virtual double height() = 0;
     virtual double width() = 0;
 
     const Margin& margin();
     void setMargin(const Margin &margin);
+
+protected:
+    virtual void paint(Graphics &graphics) = 0;
 };
 
 class Button : public Widget {
@@ -82,9 +86,12 @@ private:
 
 public:
     Button(const std::string &text);
-    void draw(Graphics &graphics) override;
     double width() override;
     double height() override;
+
+protected:
+    void paint(Graphics &graphics) override;
+
 };
 
 class Window {
@@ -113,9 +120,12 @@ private:
 
 public:
     void addWidget(std::shared_ptr<Widget> child);
-    void draw(Graphics &grahics) override;
     double width() override;
     double height() override;
+
+protected:
+    void paint(Graphics &grahics) override;
+
 };
 
 #endif
