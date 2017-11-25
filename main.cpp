@@ -8,7 +8,16 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "components.hpp"
-#define FONT "DejaVu Sans Mono 11"
+
+std::string slurp(const char *filename)
+{
+  std::ifstream in;
+  in.open(filename, std::ifstream::in);
+  std::stringstream sstr;
+  sstr << in.rdbuf();
+  in.close();
+  return sstr.str();
+}
 
 int main (int argc, char **argv)
 {
@@ -17,17 +26,10 @@ int main (int argc, char **argv)
 		return 1;
   }
 
-  Window mainWindow("Demo", 600, 600);
-  auto panel = std::make_shared<VerticalPanel>();
-  auto okBtn = std::make_shared<Button>("Ok");
-  auto cancelBtn = std::make_shared<Button>("Cancel");
-  okBtn->setMargin(Margin(5));
-  cancelBtn->setMargin(Margin(5,0,5,5));
-  panel->addWidget(okBtn);
-  panel->addWidget(cancelBtn);
-  mainWindow.addWidget(panel);
-  mainWindow.open();
-
+  Program p {};
+  auto xml = slurp("./pinta.xml");
+  p.loadUserInterfaceFromXML(const_cast<char*>(xml.c_str()));
+  p.run();
 	return 0;
 
 }

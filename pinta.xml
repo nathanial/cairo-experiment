@@ -1,4 +1,4 @@
-<MainWindow>
+<Window>
     <MainMenu>
         <Menu name="File">
         </Menu>
@@ -21,4 +21,4 @@
         <Menu name="Help">
         </Menu>
     </MainMenu>
-</MainWindow>
+</Window>

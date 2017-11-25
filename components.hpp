@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include "rapidxml/rapidxml.hpp"
 
 class SDL_Window;
 class SDL_Renderer;
@@ -64,10 +65,12 @@ public:
 };
 
 class Widget {
-private:
+protected:
+    std::vector<std::shared_ptr<Widget>> children;
     Margin _margin { 0 };
 
 public:
+    void addWidget(std::shared_ptr<Widget> child);
     void render(Graphics &graphics);
 
     virtual double height() = 0;
@@ -85,7 +88,8 @@ private:
     std::string _text;
 
 public:
-    Button(const std::string &text);
+    Button(): _text("Click Me") {}
+    explicit Button(const std::string &text);
     double width() override;
     double height() override;
 
@@ -116,16 +120,45 @@ private:
 
 class VerticalPanel : public Widget {
 private:
-    std::vector<std::shared_ptr<Widget>> children;
 
 public:
-    void addWidget(std::shared_ptr<Widget> child);
     double width() override;
     double height() override;
 
 protected:
     void paint(Graphics &grahics) override;
 
+};
+
+class MainMenu : public Widget {
+public:
+    double width() override;
+    double height() override;
+
+protected:
+    void paint(Graphics &graphics) override;
+};
+
+class Menu : public Widget {
+public:
+    double width() override;
+    double height() override;
+
+protected:
+    void paint(Graphics &graphics) override;
+};
+
+class Program {
+private:
+    Window* window = nullptr;
+
+public:
+    void loadUserInterfaceFromXML(char *xml);
+    void run();
+    ~Program();
+
+private:
+    std::shared_ptr<Widget> createWidgetFromNode(rapidxml::xml_node<char>* node);
 };
 
 #endif

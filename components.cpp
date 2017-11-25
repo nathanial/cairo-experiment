@@ -1,6 +1,8 @@
 #include "components.hpp"
 #include <iostream>
+#include <memory>
 #include <SDL2/SDL.h>
+#include "rapidxml/rapidxml.hpp"
 
 const Margin& Widget::margin(){
     return _margin;
@@ -240,7 +242,7 @@ void Window::draw_to_sdl(SDL_Surface *sdlsurf){
 }
 
 
-void VerticalPanel::addWidget(std::shared_ptr<Widget> child){
+void Widget::addWidget(std::shared_ptr<Widget> child){
     this->children.push_back(child);
 }
 
@@ -272,4 +274,83 @@ double VerticalPanel::width() {
         }
     }
     return max;
+}
+
+using namespace rapidxml;
+void Program::loadUserInterfaceFromXML(char *xml) {
+    this->window = new Window("Program", 600, 600);
+    xml_document<> doc;    // character type defaults to char
+    doc.parse<0>(xml);    // 0 means default parse flags
+    auto root = doc.first_node();
+    auto xmlCursor = root->first_node();
+    while(xmlCursor){
+        auto child = this->createWidgetFromNode(xmlCursor);
+        if(child){
+            this->window->addWidget(child);
+        }
+        xmlCursor = xmlCursor->next_sibling();
+    }
+}
+
+void Program::run(){
+    this->window->open();
+}
+
+Program::~Program(){
+    if(this->window != nullptr){
+        delete this->window;
+    }
+}
+
+std::shared_ptr<Widget> Program::createWidgetFromNode(rapidxml::xml_node<char>* node) {
+    std::string name = std::string(node->name());
+    std::shared_ptr<Widget> result;
+    if(name == "VerticalPanel"){
+        result = std::make_shared<VerticalPanel>();
+    } else if(name == "Button") {
+        result = std::make_shared<Button>();
+    } else if(name == "MainMenu"){
+        result = std::make_shared<MainMenu>();
+    } else if(name == "Menu"){
+        result = std::make_shared<Menu>();
+    } else {
+        std::cerr << "Unknown Widget: " << name << std::endl;
+        return nullptr;
+    }
+
+    auto xmlCursor = node->first_node();
+    while(xmlCursor){
+        auto child = this->createWidgetFromNode(xmlCursor);
+        if(child){
+            result->addWidget(child);
+        }
+        xmlCursor = xmlCursor->next_sibling();
+    }
+    return result;
+}
+
+
+double MainMenu::width() {
+    return 0;
+}
+
+double MainMenu::height(){
+    return 0;
+}
+
+void MainMenu::paint(Graphics &graphics) {
+
+}
+
+
+double Menu::width() {
+    return 0;
+}
+
+double Menu::height(){
+    return 0;
+}
+
+void Menu::paint(Graphics &graphics) {
+
 }
