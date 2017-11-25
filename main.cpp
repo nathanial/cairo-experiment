@@ -19,8 +19,12 @@ int main (int argc, char **argv)
 
   Window mainWindow("Demo", 600, 600);
   auto panel = std::make_shared<VerticalPanel>();
-  panel->addWidget(std::make_shared<Button>("Ok"));
-  panel->addWidget(std::make_shared<Button>("Cancel"));
+  auto okBtn = std::make_shared<Button>("Ok");
+  auto cancelBtn = std::make_shared<Button>("Cancel");
+  okBtn->setMargin(Margin(5));
+  cancelBtn->setMargin(Margin(5,0,5,5));
+  panel->addWidget(okBtn);
+  panel->addWidget(cancelBtn);
   mainWindow.addWidget(panel);
   mainWindow.open();
 

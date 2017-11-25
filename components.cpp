@@ -2,7 +2,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 
-Margin Widget::margin(){
+const Margin& Widget::margin(){
     return _margin;
 }
 
@@ -187,26 +187,26 @@ void Window::addWidget(std::shared_ptr<Widget> widget) {
 
 SDL_Texture *Window::create_texture(){
     SDL_Renderer *ren = this->_renderer;
-  SDL_Surface *sdlsurf = SDL_CreateRGBSurface(0, width, height, 32,
-    0x00FF0000, /* Rmask */
-    0x0000FF00, /* Gmask */
-    0x000000FF, /* Bmask */
-    0);
-  if (sdlsurf == nullptr){
-    std::cout << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;
-    throw "oops";
-  }
+    SDL_Surface *sdlsurf = SDL_CreateRGBSurface(0, width, height, 32,
+        0x00FF0000, /* Rmask */
+        0x0000FF00, /* Gmask */
+        0x000000FF, /* Bmask */
+        0);
+    if (sdlsurf == nullptr){
+        std::cout << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;
+        throw "oops";
+    }
 
-  this->draw_to_sdl(sdlsurf);
+    this->draw_to_sdl(sdlsurf);
 
-  SDL_Texture *tex = SDL_CreateTextureFromSurface(ren, sdlsurf);
-  SDL_FreeSurface(sdlsurf);
-  if (tex == nullptr){
-    std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-    throw "oops";
-  }
+    SDL_Texture *tex = SDL_CreateTextureFromSurface(ren, sdlsurf);
+    SDL_FreeSurface(sdlsurf);
+    if (tex == nullptr){
+        std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
+        throw "oops";
+    }
 
-  return tex;
+    return tex;
 }
 
 
@@ -244,9 +244,9 @@ void VerticalPanel::draw(Graphics &graphics) {
     int cursorY = 0;
     for(auto &&widget : this->children){
         graphics.save();
-        graphics.translate(0, cursorY);
+        graphics.translate(widget->margin().left, cursorY + widget->margin().top);
         widget->draw(graphics);
-        cursorY += widget->height();
+        cursorY += widget->height() + widget->margin().bottom + widget->margin().top;
         graphics.restore();
     }
 }
@@ -254,7 +254,7 @@ void VerticalPanel::draw(Graphics &graphics) {
 double VerticalPanel::height(){
     double total = 0;
     for(auto &&widget : this->children){
-        total += widget->height();
+        total += widget->height() + widget->margin().top + widget->margin().bottom;
     }
     return total;
 }
@@ -262,7 +262,7 @@ double VerticalPanel::height(){
 double VerticalPanel::width() {
     double max = 0;
     for(auto &&widget : this->children){
-        auto width = widget->width();
+        auto width = widget->width() + widget->margin().left + widget->margin().right;
         if(width > max){
             width = max;
         }

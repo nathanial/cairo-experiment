@@ -72,7 +72,7 @@ public:
     virtual double height() = 0;
     virtual double width() = 0;
 
-    Margin margin();
+    const Margin& margin();
     void setMargin(const Margin &margin);
 };
 

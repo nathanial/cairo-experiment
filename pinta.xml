@@ -1,0 +1,24 @@
+<MainWindow>
+    <MainMenu>
+        <Menu name="File">
+        </Menu>
+        <Menu name="Edit">
+        </Menu>
+        <Menu name="View">
+        </Menu>
+        <Menu name="Image">
+        </Menu>
+        <Menu name="Layers">
+        </Menu>
+        <Menu name="Adjustments">
+        </Menu>
+        <Menu name="Effects">
+        </Menu>
+        <Menu name="Add-ins">
+        </Menu>
+        <Menu name="Window">
+        </Menu>
+        <Menu name="Help">
+        </Menu>
+    </MainMenu>
+</MainWindow>
