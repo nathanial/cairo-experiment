@@ -25,8 +25,6 @@ std::string slurp(const char *filename)
 static void
 draw_text (cairo_t *cr)
 {
-
-
     PangoLayout *layout;
     PangoFontDescription *desc;
 

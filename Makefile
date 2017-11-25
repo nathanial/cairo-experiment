@@ -10,10 +10,13 @@ EXE = cairo-experiment
 
 all: $(EXE)
 
-$(EXE): main.o
+$(EXE): main.o components.o
 	$(CXX) $< $(LDFLAGS) -o $@
 
 main.o: main.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+components.o: components.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
