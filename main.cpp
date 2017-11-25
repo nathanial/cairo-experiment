@@ -7,7 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <SDL2/SDL.h>
-
+#include "components.hpp"
 #define FONT "DejaVu Sans Mono 11"
 
 static int width = 600, height = 600;
@@ -78,6 +78,9 @@ void draw_to_sdl(SDL_Surface *sdlsurf){
   cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_paint (cr);
   draw_text (cr);
+  CairoGraphics g(cr);
+  Button b("Hello");
+  b.draw(g);
   cairo_destroy (cr);
 
   // status = cairo_surface_write_to_png (surface, filename);

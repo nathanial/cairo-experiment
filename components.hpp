@@ -1,6 +1,8 @@
 #ifndef _COMPONENTS_H_
 #define _COMPONENTS_H_
 
+#include <pango/pangocairo.h>
+#include <pango/pango.h>
 #include <string>
 
 struct Color {
@@ -18,11 +20,23 @@ namespace Colors {
 
 class Graphics {
 public:
-    void setColor(const Color &color);
-    void setAntialias(bool value);
-    void fillRectangle(int x, int y, int width, int height);
-    void drawRectangle(int x, int y, int width, int height);
-    void setLineWidth(int width);
+    virtual void setColor(const Color &color) = 0;
+    virtual void setAntialias(bool value) = 0;
+    virtual void fillRectangle(int x, int y, int width, int height) = 0;
+    virtual void drawRectangle(int x, int y, int width, int height) = 0;
+    virtual void setLineWidth(int width) = 0;
+};
+
+class CairoGraphics : public Graphics {
+private:
+    cairo_t *_cr;
+public:
+    CairoGraphics(cairo_t *cr);
+    void setColor(const Color &color) override;
+    void setAntialias(bool value) override;
+    void fillRectangle(int x, int y, int width, int height) override;
+    void drawRectangle(int x, int y, int width, int height) override;
+    void setLineWidth(int width) override;
 };
 
 class Widget {

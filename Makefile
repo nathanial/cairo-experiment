@@ -1,3 +1,4 @@
+
 CXX = g++
 # Update these paths to match your installation
 # You may also need to update the linker option rpath, which sets where to look for
@@ -11,7 +12,7 @@ EXE = cairo-experiment
 all: $(EXE)
 
 $(EXE): main.o components.o
-	$(CXX) $< $(LDFLAGS) -o $@
+	$(CXX) *.o $(LDFLAGS) -o $@
 
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
